@@ -5,21 +5,23 @@ import { handleSaveError, validateAtUpdate } from './hooks.js'
 import { emailPattern } from "../constants/userConstans.js";
 
 const userSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        match: emailPattern,
-        unique: true,
-        required: true,
-    },
     password: {
-        type: String,
-        minlenth:6,
-        required: true,
-    }
+    minlength:6,
+    type: String,
+    required: [true, 'Set password for user'],
+  },
+  email: {
+    type: String,
+    match: emailPattern,
+    required: [true, 'Email is required'],
+    unique: true,
+  },
+  subscription: {
+    type: String,
+    enum: ["starter", "pro", "business"],
+    default: "starter"
+  },
+  token: String
 }, { versionKey: false, timestamps: true })
 
 userSchema.pre("findOneAndUpdate", validateAtUpdate);

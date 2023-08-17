@@ -8,6 +8,8 @@ import authController from "../../controllers/authController.js";
 
 const authRouter = express.Router();
 
-authRouter.post("/singup", validateBody(userSchema.userSingUpSchema), authController.singup)
+authRouter.post("/register", validateBody(userSchema.userSingUpSchema), authController.register)
+
+authRouter.post("/login", validateBody(userSchema.userSingInSchema), authController.login)
 
 export default authRouter;
