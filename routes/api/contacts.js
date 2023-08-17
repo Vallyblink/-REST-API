@@ -1,6 +1,6 @@
 import express from 'express';
 
-import contactsController from '../../controllers/contactControllers.js'
+import contactsController from '../../controllers/contactController.js'
 
 import contactsSchema from '../../schema/schemaJoi.js'
 
