@@ -4,7 +4,7 @@ import contactsController from '../../controllers/contactController.js'
 
 import contactsSchema from '../../schema/schemaJoi.js'
 
-import { validateBody } from '../../decorators/index.js';
+import { validateBody, validateFavoriteBody } from '../../decorators/index.js';
 
 import { isEmptyBody, isValidId, authenticate } from '../../middlewars/index.js';
 
@@ -23,6 +23,9 @@ contactsRouter.delete('/:contactId', isValidId, contactsController.deleteById);
 
 contactsRouter.put('/:contactId', isValidId, isEmptyBody, validateBody(contactsSchema.contactsAddSchema), contactsController.updateById);
 
-contactsRouter.patch('/:contactId/favorite', isValidId, isEmptyBody, validateBody(contactsSchema.contactUpdateFavoriteSchema), contactsController.updateFavorite);
+contactsRouter.patch('/:contactId/favorite', isValidId, validateFavoriteBody(contactsSchema.contactUpdateFavoriteSchema), contactsController.updateFavorite);
+
+contactsRouter.put('/:contactId', isEmptyBody, validateBody(contactsSchema.contactsAddSchema), contactsController.updateById);
+
 
 export default contactsRouter;
