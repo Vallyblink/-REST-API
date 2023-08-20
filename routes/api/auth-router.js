@@ -6,7 +6,7 @@ import userSchema from "../../schema/userSchema.js";
 
 import authController from "../../controllers/authController.js";
 
-import {authenticate} from "../../middlewars/index.js"
+import {authenticate, upload} from "../../middlewars/index.js"
 
 const authRouter = express.Router();
 
@@ -14,8 +14,10 @@ authRouter.post("/register", validateBody(userSchema.userSingUpSchema), authCont
 
 authRouter.post("/login", validateBody(userSchema.userSingInSchema), authController.login)
 
+authRouter.post("/logout", authenticate, authController.logout)
+
 authRouter.get("/current", authenticate, authController.getCurrent)
 
-authRouter.post("/logout",authenticate, authController.logout)
+authRouter.patch("/avatars", authenticate, upload.single("avatarURL"), authController.avatarUpdate)
 
 export default authRouter;

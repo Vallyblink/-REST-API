@@ -16,15 +16,16 @@ const userSchema = new Schema({
     required: [true, 'Email is required'],
     unique: true,
   },
-  avatar: {
-    avatarURL: String,
+  avatarURL:{
+    type: String,
   },
   subscription: {
     type: String,
     enum: ["starter", "pro", "business"],
     default: "starter"
   },
-  token: String
+  token: String,
+  
 }, { versionKey: false, timestamps: true })
 
 userSchema.pre("findOneAndUpdate", validateAtUpdate);
