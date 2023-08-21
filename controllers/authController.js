@@ -3,18 +3,23 @@ import jwt from 'jsonwebtoken';
 import gravatar from 'gravatar';
 import fs from "fs/promises"
 import path from "path";
-
+import { nanoid } from 'nanoid';
+import sgMail from "@sendgrid/mail"
 
 import User from '../models/user.js';
-import { HttpError, resizeAvatar } from '../helpers/index.js';
+import { HttpError, resizeAvatar, verificationEmail} from '../helpers/index.js';
 import { ctrlWrapper } from '../decorators/index.js';
 
-const { JWT_SECRET } = process.env;
+// const SENDGRID_API_KEY = process.env
+// sgMail.setApiKey(SENDGRID_API_KEY)
+
+const { JWT_SECRET} = process.env;
 
 const avatarPath = path.resolve("public", "avatars");
 
 const register = async (req, res) => {
     const { email, password } = req.body;
+    
     const user = await User.findOne({ email });
     if (user) {
         throw HttpError (409, "Email in use")
@@ -22,8 +27,12 @@ const register = async (req, res) => {
     const hashPassword = await bcrypt.hash(password, 10)
 
     const avatarURL = await gravatar.url(email, {s: '200', r: 'pg', d: '404'});
-    console.log(avatarURL)
-    const newUser = await User.create({ ...req.body, password: hashPassword, avatarURL});
+    
+    const verificationToken = nanoid()
+
+    verificationEmail(email, verificationToken)
+
+    const newUser = await User.create({ ...req.body, password: hashPassword, avatarURL, verificationToken });
     res.status(201).json({
         "user": {
             email: newUser.email,
@@ -90,10 +99,21 @@ const avatarUpdate = async (req, res) => {
     res.status(200).json({"avatarURL": avatarURL})
 }
 
+const getVerify = async (req, res) => {
+    const { verificationToken } = req.params;
+    const verificatedUser = await User.findOne({ verificationToken })
+    if (!verificatedUser) {
+        throw HttpError(404);
+    }
+    await User.findByIdAndUpdate(verificatedUser.id, { verify: true, verificationToken: " " });
+    res.status(200).json("Verification successful")
+}
+
 export default {
     register: ctrlWrapper(register),
     login: ctrlWrapper(login),
     getCurrent: ctrlWrapper(getCurrent),
     logout: ctrlWrapper(logout),
-    avatarUpdate: ctrlWrapper(avatarUpdate)
+    avatarUpdate: ctrlWrapper(avatarUpdate),
+    getVerify: ctrlWrapper(getVerify),
 }
