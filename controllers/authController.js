@@ -53,6 +53,9 @@ const login = async (req, res) => {
     if (!passwordCompare) {
         throw HttpError(401, "Email or password is wrong");
     };
+    if (!user.verify) {
+        throw HttpError(401, "Awaiting for verification");
+    }
     
     const payload = {
         id: user.id,
@@ -106,7 +109,7 @@ const getVerify = async (req, res) => {
         throw HttpError(404);
     }
     await User.findByIdAndUpdate(verificatedUser.id, { verify: true, verificationToken: " " });
-    res.status(200).json("Verification successful")
+    res.status(200).json({message : "Verification successful"})
 }
 
 const verify = async (req, res) => {
@@ -120,7 +123,7 @@ const verify = async (req, res) => {
     }
     verificationEmail(email, user.verificationToken)
     
-    res.status(200).json("Verification email sent")
+    res.status(200).json({message:"Verification email sent"})
 }
 
 export default {
