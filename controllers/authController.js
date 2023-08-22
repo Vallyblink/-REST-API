@@ -109,6 +109,20 @@ const getVerify = async (req, res) => {
     res.status(200).json("Verification successful")
 }
 
+const verify = async (req, res) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+        throw HttpError(404);
+    }
+    if (user.verify) {
+        throw HttpError(400, "Verification has already been passed");
+    }
+    verificationEmail(email, user.verificationToken)
+    
+    res.status(200).json("Verification email sent")
+}
+
 export default {
     register: ctrlWrapper(register),
     login: ctrlWrapper(login),
@@ -116,4 +130,5 @@ export default {
     logout: ctrlWrapper(logout),
     avatarUpdate: ctrlWrapper(avatarUpdate),
     getVerify: ctrlWrapper(getVerify),
+    verify: ctrlWrapper(verify),
 }
