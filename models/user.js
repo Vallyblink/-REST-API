@@ -5,7 +5,8 @@ import { handleSaveError, validateAtUpdate } from './hooks.js'
 import { emailPattern } from "../constants/userConstans.js";
 
 const userSchema = new Schema({
-    password: {
+  token: String,
+  password: {
     minlength:6,
     type: String,
     required: [true, 'Set password for user'],
@@ -16,12 +17,24 @@ const userSchema = new Schema({
     required: [true, 'Email is required'],
     unique: true,
   },
+  avatarURL:{
+    type: String,
+  },
   subscription: {
     type: String,
     enum: ["starter", "pro", "business"],
     default: "starter"
   },
-  token: String
+  verify: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    required: [true, 'Verify token is required'],
+  },
+
+  
 }, { versionKey: false, timestamps: true })
 
 userSchema.pre("findOneAndUpdate", validateAtUpdate);

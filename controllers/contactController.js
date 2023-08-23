@@ -4,7 +4,6 @@ import { HttpError } from '../helpers/index.js';
 import {ctrlWrapper} from '../decorators/index.js';
 
 
-
 const getAll = async (req, res) => {
     const { _id: owner } = req.user;
     const { page = 1, limit = 20 } = req.query;
